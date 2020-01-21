@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: centos:7
+    steps:
+      - checkout
+      - run:
+          name: Copy artifacts
+          command: |
+            wget https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz
+            tar -xf cmake-3.16.2-Linux-x86_64.tar.gz
+            export PATH=$PWD/cmake-3.16.2-Linux-x86_64/bin:$PATH
+            cat << EOF > /etc/yum.repos.d/Fedora-Core23.repo
+            [warning:fedora]
+            name=fedora
+            mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-23&arch=x86_64
+            enabled=1
+            gpgcheck=0
+            EOF
+            yum install gcc g++ --enablerepo=warning:fedora
+            git clone https://github.com/llvm/llvm-project.git
+            mkdir llvm-build
+            cd llvm-build
+            cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=x86 -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
+            cmake --build . -t install
+            cd ..
+      - store_artifacts:
+          path: llvm/
+          destination: /
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
