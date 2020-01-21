@@ -23,7 +23,7 @@ jobs:
             git clone https://github.com/llvm/llvm-project.git
             mkdir llvm-build
             cd llvm-build
-            cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=x86 -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
+            cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
             cmake --build . -t install
             cd ..
       - store_artifacts:
