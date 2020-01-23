@@ -8,7 +8,7 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
-            yum install -y wget tar git make gcc glibc-devel
+            yum install -y wget tar git ninja gcc glibc-devel
             wget https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz
             tar -xf cmake-3.16.2-Linux-x86_64.tar.gz
             export PATH=$PWD/cmake-3.16.2-Linux-x86_64/bin:$PATH
@@ -22,7 +22,7 @@ jobs:
             git clone https://github.com/llvm/llvm-project.git
             mkdir llvm-build
             cd llvm-build
-            CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DDLIBCXXABI_USE_COMPILER_RT=YES -DCMAKE_CXX_FLAGS="--stdlib=libc++" -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
+            CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DDLIBCXXABI_USE_COMPILER_RT=YES -DCMAKE_CXX_FLAGS="--stdlib=libc++" -DCMAKE_INSTALL_PREFIX=$PWD/../llvm -G Ninja ../llvm-project/llvm
             cmake --build . -t install -j 4
             cd ..
             cd llvm/ && tar -zcvf ../llvm.tar.gz . && cd -
