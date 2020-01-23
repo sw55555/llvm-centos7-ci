@@ -13,18 +13,22 @@ jobs:
             tar -xf cmake-3.16.2-Linux-x86_64.tar.gz
             export PATH=$PWD/cmake-3.16.2-Linux-x86_64/bin:$PATH
             wget https://github.com/balancedbanana/llvm-centos7-ci/releases/download/centos7%2Fllvm7/llvm.tar.gz
-            tar -xf llvm.tar.gz
-            export PATH=$PWD/llvm/bin:$PATH
+            mkdir llvm7
+            cd llvm7
+            tar -xf ../llvm.tar.gz
+            cd ..
+            rm llvm.tar.gz
+            export PATH=$PWD/llvm7/bin:$PATH
             git clone https://github.com/llvm/llvm-project.git
             mkdir llvm-build
             cd llvm-build
-            CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DDLIBCXXABI_USE_COMPILER_RT=YES -DCMAKE_CXX_FLAGS="--stdlib=libc++" -DCMAKE_INSTALL_PREFIX=$PWD/../llvmlatest ../llvm-project/llvm
+            CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DDLIBCXXABI_USE_COMPILER_RT=YES -DCMAKE_CXX_FLAGS="--stdlib=libc++" -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
             cmake --build . -t install -j 4
             cd ..
-            cd llvmlatest/ && tar -zcvf ../llvmlatest.tar.gz . && cd - 
+            cd llvm/ && tar -zcvf ../llvm.tar.gz . && cd -
       - run:
-          name: Upload files to Github
-          command: curl -L https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz --output ghr.tar.gz && tar -xf ghr.tar.gz && ./ghr*/ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace centos7/llvmlatest llvmlatest.tar.gz
+          name: Upload files to Githb
+          command: curl -L https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz --output ghr.tar.gz && tar -xf ghr.tar.gz && ./ghr*/ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace centos7/llvm llvm.tar.gz
 workflows:
   version: 2
   build:
