@@ -24,7 +24,7 @@ jobs:
             mkdir llvm-build
             cd llvm-build
             cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
-            cmake --build . -t install -j 8
+            cmake --build . -t install -j 4
             cd ..
             cd llvm/ && tar -zcvf ../llvm.tar.gz . && cd - 
       - store_artifacts:
