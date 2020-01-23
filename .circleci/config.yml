@@ -8,28 +8,23 @@ jobs:
       - run:
           name: Copy artifacts
           command: |
-            yum install -y wget tar git make
+            yum install -y wget tar git make glibc-devel
             wget https://github.com/Kitware/CMake/releases/download/v3.16.2/cmake-3.16.2-Linux-x86_64.tar.gz
             tar -xf cmake-3.16.2-Linux-x86_64.tar.gz
             export PATH=$PWD/cmake-3.16.2-Linux-x86_64/bin:$PATH
-            cat << EOF > /etc/yum.repos.d/Fedora-Core23.repo
-            [warning:fedora]
-            name=fedora
-            mirrorlist=http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-23&arch=x86_64
-            enabled=1
-            gpgcheck=0
-            EOF
-            yum install -y gcc gcc-c++ --enablerepo=warning:fedora
+            wget https://github.com/balancedbanana/llvm-centos7-ci/releases/download/centos7%2Fllvm7/llvm.tar.gz
+            tar -xf llvm.tar.gz
+            export PATH=$PWD/llvm/bin:$PATH
             git clone https://github.com/llvm/llvm-project.git
             mkdir llvm-build
             cd llvm-build
-            cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DCMAKE_INSTALL_PREFIX=$PWD/../llvm ../llvm-project/llvm
+            CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DDLIBCXXABI_USE_COMPILER_RT=YES -DCMAKE_CXX_FLAGS="--stdlib=libc++" -DCMAKE_INSTALL_PREFIX=$PWD/../llvmlatest ../llvm-project/llvm
             cmake --build . -t install -j 4
             cd ..
-            cd llvm/ && tar -zcvf ../llvm.tar.gz . && cd - 
+            cd llvmlatest/ && tar -zcvf ../llvmlatest.tar.gz . && cd - 
       - run:
           name: Upload files to Github
-          command: curl -L https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz --output ghr.tar.gz && tar -xf ghr.tar.gz && ./ghr*/ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace centos7/llvm7 llvm.tar.gz
+          command: curl -L https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz --output ghr.tar.gz && tar -xf ghr.tar.gz && ./ghr*/ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace centos7/llvmlatest llvmlatest.tar.gz
 workflows:
   version: 2
   build:
