@@ -37,6 +37,7 @@ jobs:
                   export AR=$TOOLCHAIN/gcc-ar
                   export RANLIB=$TOOLCHAIN/gcc-ranlib
                   export STRIP=$TOOLCHAIN/strip
+                  export CXXFLAGS='${CXXFLAGS} -std=c++17'
                   cmake -DCMAKE_MAKE_PROGRAM=$PWD/../ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DLIBCXXABI_USE_COMPILER_RT=YES -DLIBCXXABI_USE_LLVM_UNWINDER=YES -DCMAKE_INSTALL_PREFIX=$PWD/../llvm -G Ninja -DLLVM_BUILD_TOOLS=False -DLLVM_INCLUDE_TOOLS=True -DLLVM_INCLUDE_EXAMPLES=False -DLLVM_INCLUDE_TESTS=False ../llvm-project/llvm
                   cmake --build . -t install -j 8
                   cd ../llvm && tar -zcvf ../llvm.tar.gz . && cd -
