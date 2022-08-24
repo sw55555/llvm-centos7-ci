@@ -24,6 +24,7 @@ jobs:
             - run: |
                   yum install -y wget tar git glibc-devel unzip centos-release-scl
                   yum install -y llvm-toolset-7.0
+                  source /opt/rh/llvm-toolset-7.0/enable
                   wget https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-linux-x86_64.tar.gz && tar -xf cmake-3.24.1-linux-x86_64.tar.gz
                   export PATH=$PWD/cmake-3.24.1-linux-x86_64/bin:$PATH
                   wget https://github.com/ninja-build/ninja/releases/download/v1.11.0/ninja-linux.zip && unzip ninja-linux.zip
