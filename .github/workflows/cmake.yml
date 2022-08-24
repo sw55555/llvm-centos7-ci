@@ -17,7 +17,7 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
         container:
-        image: centos:7
+            image: centos:7
     continue-on-error: false
     steps:
       - run: |
@@ -28,7 +28,7 @@ jobs:
             wget https://github.com/ninja-build/ninja/releases/download/v1.11.0/ninja-linux.zip && unzip ninja-linux.zip
             git clone https://github.com/llvm/llvm-project.git -b release/14.x --depth 1
             mkdir build && cd build
-            CC=clang CXX=clang++ cmake -DCMAKE_MAKE_PROGRAM=$PWD/../ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DLIBCXXABI_USE_COMPILER_RT=YES -DLIBCXXABI_USE_LLVM_UNWINDER=YES -DCMAKE_INSTALL_PREFIX=$PWD/../llvm -DCMAKE_C_FLAGS="-fuse-ld=lld -fPIC" -DCMAKE_CXX_FLAGS="-fuse-ld=lld -stdlib=libc++ -fPIC" -G Ninja -DLLVM_BUILD_TOOLS=False -DLLVM_INCLUDE_TOOLS=True -DLLVM_INCLUDE_EXAMPLES=True -DLLVM_INCLUDE_TESTS=True ../llvm-project/llvm
+            CC=clang CXX=clang++ cmake -DCMAKE_MAKE_PROGRAM=$PWD/../ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -DLLVM_ENABLE_PROJECTS="clang;libcxx;libcxxabi;libunwind;compiler-rt;lld" -DLIBCXX_USE_COMPILER_RT=YES -DLIBCXXABI_USE_COMPILER_RT=YES -DLIBCXXABI_USE_LLVM_UNWINDER=YES -DCMAKE_INSTALL_PREFIX=$PWD/../llvm -DCMAKE_C_FLAGS="-fuse-ld=lld -fPIC" -DCMAKE_CXX_FLAGS="-fuse-ld=lld -stdlib=libc++ -fPIC" -G Ninja -DLLVM_BUILD_TOOLS=False -DLLVM_INCLUDE_TOOLS=True -DLLVM_INCLUDE_EXAMPLES=False -DLLVM_INCLUDE_TESTS=False ../llvm-project/llvm
             cmake --build . -t install -j 8
             cd ../llvm && tar -zcvf ../llvm.tar.gz . && cd -
       - uses: actions/checkout@v3
